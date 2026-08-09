@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - SKULL GAMING</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="admin-page">
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">SKULL GAMING</div>
+                <div class="sidebar-role">ADMIN</div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                    <i class="fas fa-user"></i> <span class="user-name">Ammar Kamel</span>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="#" data-section="dashboard" class="active"><i class="fas fa-chart-line"></i> لوحة المعلومات</a></li>
+                <li><a href="#" data-section="bookings"><i class="fas fa-calendar-check"></i> الحجوزات</a></li>
+                <li><a href="#" data-section="rooms"><i class="fas fa-gamepad"></i> القاعات</a></li>
+                <li><a href="#" data-section="customers"><i class="fas fa-users"></i> العملاء</a></li>
+                <li><a href="#" data-section="working-hours"><i class="fas fa-clock"></i> أوقات العمل</a></li>
+                <li><a href="#" data-section="offers"><i class="fas fa-gift"></i> العروض</a></li>
+                <li><a href="#" data-section="reports"><i class="fas fa-chart-bar"></i> التقارير</a></li>
+                <li><a href="#" data-section="settings"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                    <a href="index.html"><i class="fas fa-home"></i> الموقع</a>
+                </li>
+                <li><a href="#" onclick="Auth.logout(); return false;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div id="section-dashboard" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="admin-title">لوحة المعلومات</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon purple">📊</div><div class="stat-value" id="stat-total-bookings">0</div><div class="stat-label">إجمالي الحجوزات</div></div>
+                    <div class="stat-card"><div class="stat-icon cyan">📅</div><div class="stat-value" id="stat-today-bookings">0</div><div class="stat-label">حجوزات اليوم</div></div>
+                    <div class="stat-card"><div class="stat-icon pink">⏰</div><div class="stat-value" id="stat-upcoming-bookings">0</div><div class="stat-label">الحجوزات القادمة</div></div>
+                    <div class="stat-card"><div class="stat-icon green">💰</div><div class="stat-value" id="stat-total-revenue">0</div><div class="stat-label">الإيرادات</div></div>
+                    <div class="stat-card"><div class="stat-icon purple">🎮</div><div class="stat-value" id="stat-total-rooms">0</div><div class="stat-label">القاعات</div></div>
+                    <div class="stat-card"><div class="stat-icon green">✓</div><div class="stat-value" id="stat-available-rooms">0</div><div class="stat-label">القاعات المتاحة</div></div>
+                </div>
+                <h3 style="margin: 2rem 0 1rem;">آخر الحجوزات</h3>
+                <div id="recent-bookings-table"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+
+            <div id="section-bookings" class="admin-section" style="display: none;">
+                <div class="admin-header">
+                    <h1 class="admin-title">إدارة الحجوزات</h1>
+                    <button class="btn btn-primary" onclick="Admin.showManualBooking()"><i class="fas fa-plus"></i> حجز يدوي</button>
+                </div>
+                <div class="filters">
+                    <div class="search-box"><input type="text" id="booking-search" placeholder="بحث برقم الحجز أو اسم العميل أو الجوال..."></div>
+                    <select id="booking-status-filter" class="form-select" style="width: auto;"><option value="">جميع الحالات</option><option value="confirmed">مؤكد</option><option value="cancelled">ملغي</option></select>
+                    <select id="booking-room-filter" class="form-select" style="width: auto;"><option value="">جميع القاعات</option><option value="1">قاعة فايف</option><option value="2">قاعة فور 1</option><option value="3">قاعة فور 2</option><option value="4">قاعة فور 3</option><option value="5">قاعة الكمبيوتر</option></select>
+                    <input type="date" id="booking-date-filter" class="form-input" style="width: auto;">
+                </div>
+                <div id="bookings-table-container"></div>
+            </div>
+
+            <div id="section-rooms" class="admin-section" style="display: none;">
+                <div class="admin-header"><h1 class="admin-title">إدارة القاعات</h1></div>
+                <div id="rooms-table-container"></div>
+            </div>
+
+            <div id="section-customers" class="admin-section" style="display: none;">
+                <div class="admin-header"><h1 class="admin-title">العملاء</h1></div>
+                <div id="customers-table-container"></div>
+            </div>
+
+            <div id="section-working-hours" class="admin-section" style="display: none;">
+                <div class="admin-header"><h1 class="admin-title">أوقات العمل</h1></div>
+                <div id="working-hours-container"></div>
+            </div>
+
+            <div id="section-offers" class="admin-section" style="display: none;">
+                <div class="admin-header"><h1 class="admin-title">العروض</h1><button class="btn btn-primary" onclick="Admin.addOffer()"><i class="fas fa-plus"></i> إضافة عرض</button></div>
+                <div id="offers-container"></div>
+            </div>
+
+            <div id="section-reports" class="admin-section" style="display: none;">
+                <div class="admin-header"><h1 class="admin-title">التقارير والإحصائيات</h1></div>
+                <div id="reports-summary"></div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                    <div class="chart-container"><h4 style="margin-bottom: 1rem;">الحجوزات اليومية (آخر 7 أيام)</h4><div id="daily-bookings-chart"></div></div>
+                    <div class="chart-container"><h4 style="margin-bottom: 1rem;">الإيرادات اليومية (آخر 7 أيام)</h4><div id="daily-revenue-chart"></div></div>
+                    <div class="chart-container"><h4 style="margin-bottom: 1rem;">أكثر القاعات حجزاً</h4><div id="room-popularity-chart"></div></div>
+                </div>
+            </div>
+
+            <div id="section-settings" class="admin-section" style="display: none;">
+                <div class="admin-header"><h1 class="admin-title">إعدادات الصالة</h1></div>
+                <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; max-width: 700px;">
+                    <div class="form-group"><label class="form-label">اسم الصالة</label><input type="text" id="settings-name" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">اسم المدير</label><input type="text" id="settings-manager" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">رقم الهاتف</label><input type="text" id="settings-phone" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">واتساب</label><input type="text" id="settings-whatsapp" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input type="email" id="settings-email" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">العنوان</label><input type="text" id="settings-address" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">فيسبوك</label><input type="text" id="settings-facebook" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">انستقرام</label><input type="text" id="settings-instagram" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">تويتر</label><input type="text" id="settings-twitter" class="form-input"></div>
+                    <button class="btn btn-primary" onclick="Admin.saveSettings()" style="width: 100%;"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: View Booking -->
+    <div class="modal-overlay" id="modal-view-booking">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title">تفاصيل الحجز</h3><button class="modal-close">&times;</button></div>
+            <div class="modal-body" id="modal-booking-details"></div>
+            <div class="modal-footer"><button class="btn btn-secondary modal-close">إغلاق</button></div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Room -->
+    <div class="modal-overlay" id="modal-edit-room">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title">تعديل القاعة</h3><button class="modal-close">&times;</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-room-id">
+                <div class="form-group"><label class="form-label">اسم القاعة</label><input type="text" id="edit-room-name" class="form-input"></div>
+                <div class="form-group"><label class="form-label">نوع الجهاز</label><input type="text" id="edit-room-type" class="form-input"></div>
+                <div class="form-group"><label class="form-label">عدد الأجهزة</label><input type="number" id="edit-room-devices" class="form-input"></div>
+                <div class="form-group"><label class="form-label">السعر/ساعة</label><input type="number" id="edit-room-price" class="form-input"></div>
+                <div class="form-group"><label class="form-label">الحالة</label><select id="edit-room-status" class="form-select"><option value="available">متاحة</option><option value="closed">مغلقة</option><option value="maintenance">تحت الصيانة</option></select></div>
+                <div class="form-group"><label class="form-label">الوصف</label><textarea id="edit-room-description" class="form-textarea" rows="3"></textarea></div>
+                <div class="form-group"><label class="form-label">المميزات (سطر لكل ميزة)</label><textarea id="edit-room-features" class="form-textarea" rows="4"></textarea></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary modal-close">إلغاء</button><button class="btn btn-primary" onclick="Admin.saveRoom()">حفظ</button></div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Working Hour -->
+    <div class="modal-overlay" id="modal-edit-hour">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title">تعديل أوقات العمل</h3><button class="modal-close">&times;</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-hour-id">
+                <div class="form-group"><label class="form-label">اليوم</label><input type="text" id="edit-hour-day" class="form-input" readonly></div>
+                <div class="form-group"><label class="form-label">وقت الفتح</label><input type="time" id="edit-hour-open" class="form-input"></div>
+                <div class="form-group"><label class="form-label">وقت الإغلاق</label><input type="time" id="edit-hour-close" class="form-input"></div>
+                <div class="form-group"><label class="form-label">الحالة</label><select id="edit-hour-status" class="form-select"><option value="open">مفتوح</option><option value="closed">مغلق</option></select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary modal-close">إلغاء</button><button class="btn btn-primary" onclick="Admin.saveWorkingHour()">حفظ</button></div>
+        </div>
+    </div>
+
+    <!-- Modal: Add/Edit Offer -->
+    <div class="modal-overlay" id="modal-offer">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title" id="offer-modal-title">إضافة عرض</h3><button class="modal-close">&times;</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="offer-id">
+                <div class="form-group"><label class="form-label">عنوان العرض</label><input type="text" id="offer-title" class="form-input"></div>
+                <div class="form-group"><label class="form-label">الوصف</label><textarea id="offer-description" class="form-textarea" rows="3"></textarea></div>
+                <div class="form-group"><label class="form-label">نوع الخصم</label><select id="offer-type" class="form-select"><option value="hours">ساعات مجانية</option><option value="percentage">نسبة خصم</option></select></div>
+                <div class="form-group"><label class="form-label">قيمة الخصم</label><input type="number" id="offer-value" class="form-input"></div>
+                <div class="form-group"><label class="form-label">تاريخ البداية</label><input type="date" id="offer-start" class="form-input"></div>
+                <div class="form-group"><label class="form-label">تاريخ النهاية</label><input type="date" id="offer-end" class="form-input"></div>
+                <div class="form-group"><label class="form-label">الحالة</label><select id="offer-status" class="form-select"><option value="active">نشط</option><option value="inactive">غير نشط</option></select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary modal-close">إلغاء</button><button class="btn btn-primary" onclick="Admin.saveOffer()">حفظ</button></div>
+        </div>
+    </div>
+
+    <!-- Modal: Manual Booking -->
+    <div class="modal-overlay" id="modal-manual-booking">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title">حجز يدوي</h3><button class="modal-close">&times;</button></div>
+            <div class="modal-body">
+                <form id="manual-booking-form">
+                    <div class="form-group"><label class="form-label">القاعة</label><select id="manual-room" class="form-select"><option value="1">قاعة فايف - 150 ل.س/ساعة</option><option value="2">قاعة فور 1 - 200 ل.س/ساعة</option><option value="3">قاعة فور 2 - 200 ل.س/ساعة</option><option value="4">قاعة فور 3 - 200 ل.س/ساعة</option><option value="5">قاعة الكمبيوتر - 100 ل.س/45 دقيقة</option></select></div>
+                    <div class="form-group"><label class="form-label">التاريخ</label><input type="date" id="manual-date" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">وقت البداية</label><input type="time" id="manual-time" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">عدد الساعات</label><input type="number" id="manual-hours" class="form-input" value="1" min="1" max="8"></div>
+                    <div class="form-group"><label class="form-label">عدد الأشخاص</label><input type="number" id="manual-people" class="form-input" value="1" min="1" max="8"></div>
+                    <div class="form-group"><label class="form-label">اسم العميل</label><input type="text" id="manual-name" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">رقم الجوال</label><input type="tel" id="manual-phone" class="form-input" placeholder="09xxxxxxxx"></div>
+                    <div class="form-group"><label class="form-label">السعر/ساعة (اختياري)</label><input type="number" id="manual-price" class="form-input" placeholder="اتركه فارغاً للسعر الافتراضي"></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary modal-close">إلغاء</button><button class="btn btn-primary" onclick="Admin.saveManualBooking()">إنشاء الحجز</button></div>
+        </div>
+    </div>
+
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
